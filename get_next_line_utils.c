@@ -6,28 +6,42 @@
 /*   By: jrabenah <jrabenah@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 11:10:52 by jrabenah          #+#    #+#             */
-/*   Updated: 2025/03/21 16:09:24 by jrabenah         ###   ########.fr       */
+/*   Updated: 2025/03/24 08:54:55 by jrabenah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
-char	*ft_strncpy(char *dest, char *src, size_t n)
+size_t	ft_strlen(const char *str)
 {
-	size_t	i;
+	const char	*p;
 
+	p = str;
+	while (*p)
+	{
+		p++;
+	}
+	return (p - str);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char	*nptr;
+	int		len;
+	int		i;
+
+	len = ft_strlen(s);
 	i = 0;
-	while (src[i] != '\0' && i < n)
+	nptr = malloc(sizeof * nptr * (len + 1));
+	if (nptr == NULL)
+		return (NULL);
+	while (s[i])
 	{
-		dest[i] = src[i];
+		nptr[i] = s[i];
 		i++;
 	}
-	while (i < n)
-	{
-		dest[i] = '\0';
-		i++;
-	}
-	return (dest);
+	nptr[i] = '\0';
+	return (nptr);
 }
 
 char	*ft_strcpy(char const *dest, char const *src)
@@ -90,4 +104,65 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		ft_strcat(nptr, s2);
 	}
 	return (nptr);
+}
+
+char	*ft_strncpy(char *dest, char const *src, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while (src[i] != '\0' && i < n)
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	while (i < n)
+	{
+		dest[i] = '\0';
+		i++;
+	}
+	return (dest);
+}
+
+char	*ft_substr(const char *s, unsigned int start, size_t len)
+{
+	size_t	src_len;
+	char	*nptr;
+
+	src_len = ft_strlen(s);
+	if (!s || start < 0 || len < 0)
+	{
+		return (NULL);
+	}
+	if (start > src_len || len == 0)
+	{
+		nptr = malloc(sizeof * nptr * 1);
+		if (!nptr)
+			return (NULL);
+		nptr[0] = '\0';
+		return (nptr);
+	}
+	if (len > src_len - start)
+		len = src_len - start;
+	nptr = malloc(sizeof * nptr * (len + 1));
+	if (!nptr)
+		return (NULL);
+	ft_strncpy(nptr, s + start, len);
+	return (nptr);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	char	*p;
+
+	p = (char *)s;
+	while (*p)
+	{
+		if ((c >= 256 && *p == c % 256) || (*p == c))
+			return (p);
+		p++;
+	}
+	if (*p == '\0' && *p == c)
+		return (p);
+	return (NULL);
 }
