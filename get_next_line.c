@@ -6,7 +6,7 @@
 /*   By: jrabenah <jrabenah@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 07:40:08 by jrabenah          #+#    #+#             */
-/*   Updated: 2025/03/25 13:50:29 by jrabenah         ###   ########.fr       */
+/*   Updated: 2025/03/27 12:00:54 by jrabenah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,33 +17,35 @@
 # define BUFFER_SIZE 42
 #endif
 
-static char	*extract_line_after_n(char *line_buffer)
+static char	*ft_extract_line_after_n(char *line_buffer)
 {
 	char	*tmp;
-	ssize_t	i;
+	size_t	i;
 
-	tmp = NULL;
+	if (!line_buffer)
+		return (NULL);
 	i = 0;
 	while (line_buffer[i] != '\n' && line_buffer[i] != '\0')
 		i++;
-	if (line_buffer[i] == 0 || line_buffer[1] == 0)
+	if (line_buffer[i] == '\0' || line_buffer[i + 1] == '\0')
 		return (NULL);
 	tmp = ft_substr(line_buffer, i + 1, ft_strlen(line_buffer) - i);
-	if (*tmp == 0)
+	if (!tmp)
+		return (NULL);
+	if (tmp[0] == '\0')
 	{
 		free(tmp);
 		tmp = NULL;
 	}
-	line_buffer[i + 1] = 0;
+	line_buffer[i + 1] = '\0';
 	return (tmp);
 }
 
-static char	*cloud_read(int fd, char *tmp, char *buffer)
+static char	*ft_cloud_read(int fd, char *tmp, char *buffer)
 {
 	ssize_t	count_bytes;
 	char	*temp;
 
-	temp = NULL;
 	count_bytes = 1;
 	while (count_bytes > 0)
 	{
@@ -53,12 +55,13 @@ static char	*cloud_read(int fd, char *tmp, char *buffer)
 		if (count_bytes == 0)
 			break ;
 		buffer[count_bytes] = '\0';
-		if (!tmp)
-			tmp = ft_strdup("");
 		temp = tmp;
+		if (!temp)
+			temp = ft_strdup("");
 		tmp = ft_strjoin(temp, buffer);
 		free(temp);
-		temp = NULL;
+		if (!tmp)
+			break ;
 		if (ft_strchr(buffer, '\n'))
 			break ;
 	}
@@ -67,50 +70,51 @@ static char	*cloud_read(int fd, char *tmp, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	*tmp;
+	static char	*storage;
 	char		*line;
-	char		*newline;
 	char		*buffer;
-	char		*line_new;
+	char		*newline_pos;
+	char		*new_storage;
 
-	buffer = malloc((BUFFER_SIZE + 1) * sizeof * buffer);
-	if (fd < 0 || (BUFFER_SIZE <= 0) || read(fd, 0, 0) < 0)
-		return (free(tmp), tmp = NULL, NULL);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	buffer = malloc(BUFFER_SIZE + 1);
 	if (!buffer)
-		return (NULL);
-	line = cloud_read(fd, tmp, buffer);
+		return (free(storage), storage = NULL, NULL);
+	line = ft_cloud_read(fd, storage, buffer);
 	free(buffer);
-	buffer = NULL;
 	if (!line)
-		return (NULL);
-	newline = ft_strchr(line, '\n');
-	if (newline)
+		return (free(storage), storage = NULL, NULL);
+	newline_pos = ft_strchr(line, '\n');
+	if (newline_pos)
 	{
-		line_new = ft_substr(line, 0, newline - line + 1);
-		newline = extract_line_after_n(line);
+		new_storage = ft_extract_line_after_n(line);
+		storage = new_storage;
+		return (line);
 	}
-	else
-		line_new = ft_strdup(line);
-	return (tmp = newline, line_new);
+	storage = NULL;
+	return (line);
 }
 
 char	*ft_strdup(const char *s)
 {
+	size_t	len;
+	size_t	i;
 	char	*nptr;
-	int		len;
-	int		i;
 
-	len = ft_strlen(s);
-	i = 0;
-	nptr = malloc(sizeof * nptr * (len + 1));
-	if (nptr == NULL)
+	if (!s)
 		return (NULL);
-	while (s[i])
+	len = ft_strlen(s);
+	nptr = malloc(len + 1);
+	if (!nptr)
+		return (NULL);
+	i = 0;
+	while (i < len)
 	{
 		nptr[i] = s[i];
 		i++;
 	}
-	nptr[i] = '\0';
+	nptr[len] = '\0';
 	return (nptr);
 }
 

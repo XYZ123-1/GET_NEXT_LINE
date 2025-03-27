@@ -6,7 +6,7 @@
 /*   By: jrabenah <jrabenah@student.42antananari    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 11:10:52 by jrabenah          #+#    #+#             */
-/*   Updated: 2025/03/25 13:51:06 by jrabenah         ###   ########.fr       */
+/*   Updated: 2025/03/27 11:32:44 by jrabenah         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ char	*ft_substr(const char *s, unsigned int start, size_t len)
 
 	nptr = NULL;
 	src_len = ft_strlen(s);
-	if (!s || start < 0 || len < 0)
+	if (!s)
 		return (NULL);
 	if (start > src_len || len == 0)
 	{
